@@ -37,16 +37,16 @@ function onSquareClick(clickedSquare, selectedSquares) {
     return move.to === clickedSquare;
   }).length > 0;
 
-  if (isMoveLegal) {
-    if (selectedPieceObject.type === 'p' && (clickedSquare[1] === '1' || clickedSquare[1] === '8')) { // Promotion
-      board.askPromotion(selectedPieceObject.color, function(piece, shortPiece) {
-        move(selectedSquare, clickedSquare, piece, shortPiece);
-      });
-    } else {
-      move(selectedSquare, clickedSquare);
-    }
+  if (!isMoveLegal) {
+    return;
+  }
+
+  if (selectedPieceObject.type === 'p' && (clickedSquare[1] === '1' || clickedSquare[1] === '8')) { // Promotion
+    board.askPromotion(selectedPieceObject.color, function(piece, shortPiece) {
+      move(selectedSquare, clickedSquare, piece, shortPiece);
+    });
   } else {
-    console.log('Illegal move: from ' + selectedSquare + ' to ' + clickedSquare);
+    move(selectedSquare, clickedSquare);
   }
 }
 

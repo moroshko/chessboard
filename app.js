@@ -1,15 +1,17 @@
+var fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+var game = new Chess(fen);
 var board = new ChessBoard('board', {
-  fen: 'rnbqnbrr/ppp2ppp/5n2/3Pk3/2P1P3/8/PP2N2P/RNBQ1RK1 w - - 0 1',
-  resize: false,
+  fen: fen,
+  resize: true,
   onSquareClick: onSquareClick
 });
 
-function onSquareClick(clickedSquare, clickedPiece, selectedSquares) {
+function onSquareClick(clickedSquare, selectedSquares) {
   if (selectedSquares.length === 0) {
-    if (clickedPiece !== null) {
+    if (game.moves({ square: clickedSquare }).length > 0) {
       board.selectSquare(clickedSquare);
     }
-    
+
     return;
   }
 
@@ -21,5 +23,54 @@ function onSquareClick(clickedSquare, clickedPiece, selectedSquares) {
   }
 
   board.unselectSquare(selectedSquare);
-  board.move(selectedSquare, clickedSquare);
+
+  var clickedPieceObject = game.get(clickedSquare);
+  var selectedPieceObject = game.get(selectedSquare);
+
+  if (clickedPieceObject && (clickedPieceObject.color === selectedPieceObject.color)) {
+    board.selectSquare(clickedSquare);
+    return;
+  }  
+
+  var legalMoves = game.moves({ square: selectedSquare, verbose: true });
+  var isMoveLegal = legalMoves.filter(function(move) {
+    return move.to === clickedSquare;
+  }).length > 0;
+
+  if (isMoveLegal) {
+    if (selectedPieceObject.type === 'p' && (clickedSquare[1] === '1' || clickedSquare[1] === '8')) { // Promotion
+      board.askPromotion(selectedPieceObject.color, function(piece, shortPiece) {
+        move(selectedSquare, clickedSquare, piece, shortPiece);
+      });
+    } else {
+      move(selectedSquare, clickedSquare);
+    }
+  } else {
+    console.log('Illegal move: from ' + selectedSquare + ' to ' + clickedSquare);
+  }
+}
+
+function move(from, to, promotionPiece, promotionShortPiece) {
+  var moveObject = {
+    from: from,
+    to: to
+  };
+  var boardMoveOptions = {};
+
+  if (promotionPiece) {
+    moveObject.promotion = promotionShortPiece;
+    boardMoveOptions.promotion = promotionPiece;
+  }
+
+  var move = game.move(moveObject);
+
+  if (move.flags.indexOf('e') > -1) {
+    boardMoveOptions.enPassant = true;
+  } else if (move.flags.indexOf('k') > -1) {
+    boardMoveOptions.kingsideCastling = true;
+  } else if (move.flags.indexOf('q') > -1) {
+    boardMoveOptions.queensideCastling = true;
+  }
+
+  board.move(from, to, boardMoveOptions);
 }

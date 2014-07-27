@@ -3,16 +3,21 @@ window.ChessBoard = function(boardId, config) {
 
   var options = {
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
-    resize: true
+    resize: true,
+    minSquareSize: 20,
+    maxSquareSize: 64
   };
 
   for (var key in config) {
     options[key] = config[key];
   }
 
-  var maxSquareSize = 64;
   var boardBorderWidth, squareSize, boardWidthFix, selectedSquares = [];
   var board = {};
+  var promotion = {
+    pieces: [],
+    selectedElement: null
+  };
 
   function calcSquare(row, column) {
     return String.fromCharCode(97 + column) + row;
@@ -58,12 +63,117 @@ window.ChessBoard = function(boardId, config) {
     }
   }
 
+  function createPromotionPiece(piece) {
+    var pieceElement = document.createElement('div');
+
+    pieceElement.className = 'square ' + piece;
+    pieceElement.setAttribute('data-piece', piece);
+
+    promotion.pieces.push({ piece: piece, element: pieceElement });
+
+    return pieceElement;
+  }
+
+  function createPromotionPieces(color) {
+    var piecesWrapper = document.createElement('div');
+    piecesWrapper.className = 'pieces';
+
+    piecesWrapper.appendChild(createPromotionPiece(color + 'Q'));
+    piecesWrapper.appendChild(createPromotionPiece(color + 'R'));
+    piecesWrapper.appendChild(createPromotionPiece(color + 'N'));
+    piecesWrapper.appendChild(createPromotionPiece(color + 'B'));
+
+    if (color === 'w') {
+      promotion.whitePiecesWrapper = piecesWrapper;
+    } else {
+      promotion.blackPiecesWrapper = piecesWrapper;
+    }
+  }
+
+  function createPromotion() {
+    // Pieces
+    createPromotionPieces('w');
+    createPromotionPieces('b');
+
+    // Promote button
+    var promoteButton = document.createElement('button');
+    var promoteButtonText = document.createTextNode('Promote');
+
+    promoteButton.appendChild(promoteButtonText);
+    promotion.promoteButton = promoteButton;
+
+    var promoteButtonWrapper = document.createElement('div');
+
+    promoteButtonWrapper.appendChild(promoteButton);
+    promotion.promoteButtonWrapper = promoteButtonWrapper;
+
+    // Promotion wrapper
+    var promotionWrapper = document.createElement('div');
+    promotionWrapper.className = 'promotion-wrapper';
+
+    promotionWrapper.appendChild(promotion.whitePiecesWrapper);
+    promotionWrapper.appendChild(promotion.blackPiecesWrapper);
+    promotionWrapper.appendChild(promoteButtonWrapper);
+
+    promotion.wrapper = promotionWrapper;
+
+    // Promotion overlay
+    var overlay = document.createElement('div');
+    overlay.className = 'promotion-overlay';
+    promotion.overlay = overlay;
+
+    overlay.appendChild(promotionWrapper);
+    board.element.appendChild(overlay);
+
+    // Set click handlers
+    for (var i = 0, len = promotion.pieces.length; i < len; i++) {
+      promotion.pieces[i].element.addEventListener('click', onPromotionPieceClick);
+    }
+
+    promoteButton.addEventListener('click', onPromotionButtonClick);
+  }
+
+  function onPromotionPieceClick(event) {
+    var clickedElement = event.target;
+
+    // Selected piece clicked
+    if (clickedElement === promotion.selectedElement) {
+      return;
+    }
+
+    // First time piece is selected
+    if (promotion.selectedElement === null) {
+      promotion.selectedElement = clickedElement;
+      clickedElement.classList.add('selected');
+      promotion.promoteButton.disabled = false;
+      return;
+    }
+
+    // Selecting another piece
+    promotion.selectedElement.classList.remove('selected');
+    promotion.selectedElement = clickedElement;
+    clickedElement.classList.add('selected');
+  }
+
+  function onPromotionButtonClick() {
+    var piece = promotion.selectedElement.getAttribute('data-piece');
+    var shortPiece = String.fromCharCode(piece.charCodeAt(1) + 32);
+
+    promotion.overlay.style.display = 'none';
+
+    if (promotion.callback) {
+      promotion.callback(piece, shortPiece);
+    }
+  }
+
   function calcSquareSize() {
     var parentStyle = getComputedStyle(board.element.parentNode);
     var parentWidth = parseInt(parentStyle.width) - parseInt(parentStyle.paddingLeft) 
                                                   - parseInt(parentStyle.paddingRight);
     
-    squareSize = Math.min(Math.floor((parentWidth - 2 * boardBorderWidth) / 8), maxSquareSize);
+    squareSize = Math.floor((parentWidth - 2 * boardBorderWidth) / 8);
+    squareSize = Math.min(squareSize, options.maxSquareSize);
+    squareSize = Math.max(squareSize, options.minSquareSize);
   }
 
   function setBoardSize() {
@@ -73,6 +183,7 @@ window.ChessBoard = function(boardId, config) {
     var rowWidthPx = (8 * squareSize) + 'px';
     var backgroundSizePx = (6 * squareSize) + 'px';
 
+    // Update board elements
     board.element.style.width = (8 * squareSize) + boardWidthFix + 'px';
 
     for (var r = 8; r >= 1; r--) {
@@ -86,6 +197,28 @@ window.ChessBoard = function(boardId, config) {
         board[r][c].element.style.backgroundPosition = backgroundPosition(board[r][c].piece);
       }
     }
+
+    // Update promotion elements
+    promotion.wrapper.style.width = (4 * squareSize) + 'px';
+    promotion.wrapper.style.height = (2 * squareSize) + 'px';
+    promotion.wrapper.style.marginTop = (3 * squareSize) + 'px';
+
+    promotion.whitePiecesWrapper.style.height = squareSizePx;
+    promotion.blackPiecesWrapper.style.height = squareSizePx;
+
+    for (var i = 0, len = promotion.pieces.length; i < len; i++) {
+      var piece = promotion.pieces[i].piece;
+      var element = promotion.pieces[i].element;
+
+      element.style.width = squareSizePx;
+      element.style.height = squareSizePx;
+      element.style.backgroundSize = backgroundSizePx;
+      element.style.backgroundPosition = backgroundPosition(piece);
+    }
+
+    promotion.promoteButtonWrapper.style.height = squareSizePx;
+    promotion.promoteButtonWrapper.style.lineHeight = squareSizePx;
+    promotion.promoteButton.style.fontSize = squareSize / 2.5 + 'px';
   }
 
   function backgroundPosition(piece) {
@@ -138,13 +271,41 @@ window.ChessBoard = function(boardId, config) {
 
   function onSquareClick(event) {
     var clickedSquare = event.target.getAttribute('data-square');
-    var clickedPiece = getBoardSquare(clickedSquare).piece;
 
-    options.onSquareClick(clickedSquare, clickedPiece, selectedSquares);
+    options.onSquareClick(clickedSquare, selectedSquares);
   }
 
-  this.move = function(fromSquare, toSquare) {
-    console.log('Moving from ' + fromSquare + ' to ' + toSquare);
+  function clearSquare(square) {
+    var boardSquare = getBoardSquare(square);
+    var piece = boardSquare.piece;
+
+    if (piece !== null) {
+      boardSquare.element.classList.remove(piece);
+    }
+
+    boardSquare.piece = null;
+  }
+
+  this.move = function(fromSquare, toSquare, options) {
+    var piece = getBoardSquare(fromSquare).piece;
+
+    clearSquare(fromSquare);
+    putPiece(toSquare, piece);
+
+    if (!options) {
+      return;
+    }
+
+    // Handle special moves
+    if (options.enPassant) {
+      clearSquare(toSquare[0] + fromSquare[1]);
+    } else if (options.kingsideCastling) {
+      this.move('h' + fromSquare[1], 'f' + fromSquare[1]);
+    } else if (options.queensideCastling) {
+      this.move('a' + fromSquare[1], 'd' + fromSquare[1]);
+    } else if (options.promotion) {
+      putPiece(toSquare, options.promotion);
+    }
   };
 
   function repeatChar(char, count) {
@@ -155,7 +316,7 @@ window.ChessBoard = function(boardId, config) {
     return result;
   }
 
-  function setPiece(square, piece) {
+  function putPiece(square, piece) {
     var boardSquare = getBoardSquare(square);
     var currentPiece = boardSquare.piece;
 
@@ -189,18 +350,36 @@ window.ChessBoard = function(boardId, config) {
 
       for (var c = 0; c < 8; c++) {
         if (rows[r][c] !== '.') {
-          setPiece(calcSquare(8 - r, c), calcPieceFromFenPiece(rows[r][c]));
+          putPiece(calcSquare(8 - r, c), calcPieceFromFenPiece(rows[r][c]));
         }
       }
     }
   };
 
+  this.askPromotion = function(color, callback) {
+    promotion.callback = callback;
+    promotion.whitePiecesWrapper.style.display = (color === 'w' ? 'block' : 'none');
+    promotion.blackPiecesWrapper.style.display = (color === 'b' ? 'block' : 'none');
+
+    promotion.promoteButton.disabled = true;
+
+    if (promotion.selectedElement !== null) {
+      promotion.selectedElement.classList.remove('selected');
+    }
+
+    promotion.selectedElement = null;
+
+    promotion.overlay.style.display = 'block';
+  };
+
   createBoard();
+  createPromotion();
 
   setTimeout(function() { // Without setTimeout, boxSizing is not set yet.
     var boardStyle = getComputedStyle(board.element);
 
-    boardBorderWidth = parseInt(boardStyle.borderWidth);
+    // Assumption: all 4 borders have the same width
+    boardBorderWidth = parseInt(boardStyle.borderTopWidth);
 
     if (boardStyle.boxSizing === 'border-box') {
       boardWidthFix = 2 * boardBorderWidth;

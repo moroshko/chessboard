@@ -1,4 +1,5 @@
 .chessboard {
+  position: relative;
   margin-left: auto;
   margin-right: auto;
   border: 2px solid #444;
@@ -20,4 +21,19 @@
 .chessboard .bP, .chessboard .bB, .chessboard .bN, 
 .chessboard .bR, .chessboard .bQ, .chessboard .bK {
   background-image: url(chesspieces.png);
+}
+.chessboard .promotion-overlay {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.chessboard .promotion-wrapper {
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+  text-align: center;
 }

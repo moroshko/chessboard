@@ -1,6 +1,8 @@
 # Overview
 
-Pure Javascript implementation of chess board with no dependencies (doesn't require jQuery).
+Minimalistic Javascript implementation of a chess board UI.
+
+It just provides an API to visualize a chess board. If you are after validating chess rules, consider using [chess.js][1].
 
 # How to use
 
@@ -71,10 +73,13 @@ Asks user to choose a promotion piece for a given color (`'w'` or `'b'`).
 If a `callback` function is specified, it is will be called once the user made the choice, and will have the following arguments:
 
 1. `piece` - The chosen piece in the following format: `'wQ'`, `'wR'`, `'bB'`, etc. It can be useful for the `promotion` option in `move()`.
-2. `shortPiece` - The chosen piece in the following format: `'q'`, `'r'`, `'n'`, `'b'`. It can be useful when integrating with other libraries such as [chess.js](https://github.com/jhlywa/chess.js) (see the `promotion` option in [`move()`](https://github.com/jhlywa/chess.js#movemove)).
+2. `shortPiece` - The chosen piece in the following format: `'q'`, `'r'`, `'n'`, `'b'`. It can be useful when integrating with other libraries such as [chess.js][1] (see the `promotion` option in [`move()`](https://github.com/jhlywa/chess.js#movemove)).
 
 ##### Examples
 
     board.askPromotion('w', function(piece, shortPiece) {
       // Now we know which piece user chose. Do something with this piece.
     });
+
+
+[1]: https://github.com/jhlywa/chess.js

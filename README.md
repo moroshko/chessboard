@@ -4,6 +4,16 @@ Minimalistic Javascript implementation of a chess board UI.
 
 It just provides an API to visualize a chess board. If you are after validating chess rules, consider using [chess.js][1].
 
+# Dependencies
+
+None! (doesn't require jQuery)
+
+# Tested on
+
+* Chrome
+* Firefox
+* Phonegap
+
 # How to use
 
 1. Include `chessboard.css` and `chessboard.js`, and make sure that `chesspieces.png` is in the same location as `chessboard.css`.

@@ -55,4 +55,24 @@ function move(from, to, promotionShortPiece) {
   });
 
   board.setPosition(game.fen());
+
+  randomMove();
 }
+
+function randomMove() {
+  var legalMoves = game.moves();
+
+  var randomIndex = Math.floor(Math.random() * legalMoves.length);
+
+  game.move(legalMoves[randomIndex]);
+  board.setPosition(game.fen());
+
+  if (game.game_over()) {
+    if (game.in_checkmate()) {
+      alert('You ' + (game.turn() === 'w' ? 'lost' : 'won'));
+    } else {
+      alert('It\'s a draw');
+    }
+  }
+}
+

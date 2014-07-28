@@ -12,6 +12,7 @@ None! (doesn't require jQuery)
 
 * Latest Chrome
 * Latest Firefox
+* Latest Safari
 * PhoneGap
 
 # How to use

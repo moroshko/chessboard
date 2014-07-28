@@ -3,6 +3,7 @@ var game = new Chess(fen);
 var board = new ChessBoard('board', {
   fen: fen,
   resize: true,
+  orientation: 'b',
   onSquareClick: onSquareClick
 });
 

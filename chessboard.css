@@ -6,8 +6,10 @@
 }
 .chessboard.flipped,
 .chessboard.flipped .white.square,
-.chessboard.flipped .black.square {
+.chessboard.flipped .black.square,
+.chessboard .promotion-wrapper {
   transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
 }
 .chessboard .square {
   float: left;

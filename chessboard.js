@@ -4,6 +4,7 @@ window.ChessBoard = function(boardId, config) {
   var options = {
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
     resize: true,
+    orientation: 'w',
     minSquareSize: 20,
     maxSquareSize: 64
   };
@@ -27,6 +28,11 @@ window.ChessBoard = function(boardId, config) {
     var boardElement = document.getElementById(boardId);
 
     boardElement.classList.add('chessboard');
+
+    if (options.orientation === 'b') {
+      boardElement.classList.add('flipped');
+    }
+
     board.element = boardElement;
 
     for (var r = 8; r >= 1; r--) {

@@ -4,6 +4,11 @@
   margin-right: auto;
   border: 2px solid #444;
 }
+.chessboard.flipped,
+.chessboard.flipped .white.square,
+.chessboard.flipped .black.square {
+  transform: rotate(180deg);
+}
 .chessboard .square {
   float: left;
 }

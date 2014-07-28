@@ -8,11 +8,11 @@ It just provides an API to visualize a chess board. If you are after validating 
 
 None! (doesn't require jQuery)
 
-# Tested on
+# Supported browsers/platforms
 
-* Chrome
-* Firefox
-* Phonegap
+* Latest Chrome
+* Latest Firefox
+* PhoneGap
 
 # How to use
 
@@ -26,6 +26,9 @@ None! (doesn't require jQuery)
 
 ### fen (string)
 Defines the initial position on the board. Defaults to the initial chess position.
+
+### orientation ('w' or 'b')
+Defined the orientation of the board. Defaults to `'w'`.
 
 ### resize (boolean)
 Whether the board will be resizable automatically on window resize. Defaults to `true`.

@@ -12,13 +12,14 @@ None! (doesn't require jQuery)
 
 * Latest Chrome
 * Latest Firefox
+* Latest Safari
 * PhoneGap
 
 # How to use
 
 1. Include `chessboard.css` and `chessboard.js`, and make sure that `chesspieces.png` is in the same location as `chessboard.css`.
 
-2. Add something like `<div id="myBoard"></div>` in your HTML
+2. Add a board element in your HTML, e.g.: `<div id="myBoard"></div>`
 
 3. Initialize the chess board: `var board = new ChessBoard('myBoard', options)`, where `options` is an object.
 

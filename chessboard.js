@@ -168,7 +168,7 @@ window.ChessBoard = function(boardId, config) {
     promotion.overlay.style.display = 'none';
 
     if (promotion.callback) {
-      promotion.callback(piece, shortPiece);
+      promotion.callback(shortPiece);
     }
   }
 
@@ -292,28 +292,6 @@ window.ChessBoard = function(boardId, config) {
     boardSquare.piece = null;
   }
 
-  this.move = function(fromSquare, toSquare, options) {
-    var piece = getBoardSquare(fromSquare).piece;
-
-    clearSquare(fromSquare);
-    putPiece(toSquare, piece);
-
-    if (!options) {
-      return;
-    }
-
-    // Handle special moves
-    if (options.enPassant) {
-      clearSquare(toSquare[0] + fromSquare[1]);
-    } else if (options.kingsideCastling) {
-      this.move('h' + fromSquare[1], 'f' + fromSquare[1]);
-    } else if (options.queensideCastling) {
-      this.move('a' + fromSquare[1], 'd' + fromSquare[1]);
-    } else if (options.promotion) {
-      putPiece(toSquare, options.promotion);
-    }
-  };
-
   function repeatChar(char, count) {
     for (var result = ''; result.length < count;) {
       result += char;
@@ -355,8 +333,12 @@ window.ChessBoard = function(boardId, config) {
       });
 
       for (var c = 0; c < 8; c++) {
-        if (rows[r][c] !== '.') {
-          putPiece(calcSquare(8 - r, c), calcPieceFromFenPiece(rows[r][c]));
+        var square = calcSquare(8 - r, c);
+
+        if (rows[r][c] === '.') {
+          clearSquare(square);
+        } else {
+          putPiece(square, calcPieceFromFenPiece(rows[r][c]));
         }
       }
     }

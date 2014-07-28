@@ -12,7 +12,6 @@ None! (doesn't require jQuery)
 
 * Latest Chrome
 * Latest Firefox
-* Latest Safari
 * PhoneGap
 
 # How to use
@@ -28,8 +27,8 @@ None! (doesn't require jQuery)
 ### fen (string)
 Defines the initial position on the board. Defaults to the initial chess position.
 
-### orientation ('w' or 'b')
-Defined the orientation of the board. Defaults to `'w'`.
+### orientation (string)
+Defined the orientation of the board. Should be `'w'` or `'b'`. Defaults to `'w'`.
 
 ### resize (boolean)
 Whether the board will be resizable automatically on window resize. Defaults to `true`.
@@ -62,37 +61,17 @@ Sets the given position. `fenString` must be in one of the following formats:
 * `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`
 * `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR`
 
-### move(fromSquare, toSquare, options)
-Moves piece from `fromSquare` to `toSquare`. If there is a piece on `toSquare`, it is removed.
-
-By providing `options`, special moves can be handled. The following options are available:
-
-* `enPassant: true` - will remove the captured opponent's pawn
-* `kingsideCastling: true` - will move the 'h' rook to 'f'
-* `queensideCastling: true` - will move the 'a' rook to 'd'
-* `promotion: piece` - will put the promotion piece on `toSquare`
-
-##### Examples
-
-    board.move('e2', 'e4');
-    board.move('d5', 'e6', { enPassant: true });
-    board.move('e8', 'g8', { kingsideCastling: true });
-    board.move('e1', 'c1', { queensideCastling: true });
-    board.move('g7', 'h8', { promotion: 'wQ' });         // or 'wR', 'wN', 'wB'
-    board.move('b2', 'b1', { promotion: 'bQ' });         // or 'bR', 'bN', 'bB'
-
 ### askPromotion(color, callback)
-Asks user to choose a promotion piece for a given color (`'w'` or `'b'`).
+Presents a small dialog asking the user to choose a promotion piece (of a specified color, `'w'` or `'b'`). User has to click on a piece, and then on the "Promote" button, in order to close the dialog.
 
-If a `callback` function is specified, it is will be called once the user made the choice, and will have the following arguments:
+If a `callback` function is specified, it is will be called once the dialog is closed, and will have the following argument:
 
-1. `piece` - The chosen piece in the following format: `'wQ'`, `'wR'`, `'bB'`, etc. It can be useful for the `promotion` option in `move()`.
-2. `shortPiece` - The chosen piece in the following format: `'q'`, `'r'`, `'n'`, `'b'`. It can be useful when integrating with other libraries such as [chess.js][1] (see the `promotion` option in [`move()`](https://github.com/jhlywa/chess.js#movemove)).
+* `shortPiece` - The selected piece in the following format: `'q'`, `'r'`, `'n'`, `'b'`. It can be useful when integrating with other libraries such as [chess.js][1] (see the `promotion` option in [`move()`](https://github.com/jhlywa/chess.js#movemove)).
 
-##### Examples
+##### Example
 
-    board.askPromotion('w', function(piece, shortPiece) {
-      // Now we know which piece user chose. Do something with this piece.
+    board.askPromotion('w', function(shortPiece) {
+      // Now we know which piece user selected.
     });
 
 

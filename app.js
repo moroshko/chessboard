@@ -1,9 +1,5 @@
-var fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-var game = new Chess(fen);
+var game = new Chess();
 var board = new ChessBoard('board', {
-  fen: fen,
-  resize: true,
-  orientation: 'b',
   onSquareClick: onSquareClick
 });
 
@@ -31,7 +27,7 @@ function onSquareClick(clickedSquare, selectedSquares) {
   if (clickedPieceObject && (clickedPieceObject.color === selectedPieceObject.color)) {
     board.selectSquare(clickedSquare);
     return;
-  }  
+  }
 
   var legalMoves = game.moves({ square: selectedSquare, verbose: true });
   var isMoveLegal = legalMoves.filter(function(move) {
@@ -43,35 +39,20 @@ function onSquareClick(clickedSquare, selectedSquares) {
   }
 
   if (selectedPieceObject.type === 'p' && (clickedSquare[1] === '1' || clickedSquare[1] === '8')) { // Promotion
-    board.askPromotion(selectedPieceObject.color, function(piece, shortPiece) {
-      move(selectedSquare, clickedSquare, piece, shortPiece);
+    board.askPromotion(selectedPieceObject.color, function(shortPiece) {
+      move(selectedSquare, clickedSquare, shortPiece);
     });
   } else {
     move(selectedSquare, clickedSquare);
   }
 }
 
-function move(from, to, promotionPiece, promotionShortPiece) {
-  var moveObject = {
+function move(from, to, promotionShortPiece) {
+  game.move({
     from: from,
-    to: to
-  };
-  var boardMoveOptions = {};
+    to: to,
+    promotion: promotionShortPiece
+  });
 
-  if (promotionPiece) {
-    moveObject.promotion = promotionShortPiece;
-    boardMoveOptions.promotion = promotionPiece;
-  }
-
-  var move = game.move(moveObject);
-
-  if (move.flags.indexOf('e') > -1) {
-    boardMoveOptions.enPassant = true;
-  } else if (move.flags.indexOf('k') > -1) {
-    boardMoveOptions.kingsideCastling = true;
-  } else if (move.flags.indexOf('q') > -1) {
-    boardMoveOptions.queensideCastling = true;
-  }
-
-  board.move(from, to, boardMoveOptions);
+  board.setPosition(game.fen());
 }

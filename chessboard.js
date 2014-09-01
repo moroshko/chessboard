@@ -279,8 +279,12 @@ window.ChessBoard = function(boardId, config) {
 
   this.unselectAllSquares = function() {
     for (var i = 0, len = selectedSquares.length; i < len; i++) {
-      this.unselectSquare(selectedSquares[i]);
+      var boardSquare = getBoardSquare(selectedSquares[i]);
+
+      boardSquare.element.classList.remove('selected');
     }
+
+    selectedSquares = [];
   };
 
   function onSquareClick(event) {

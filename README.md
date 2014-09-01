@@ -43,18 +43,27 @@ Function that will be called when square is clicked. This function will have the
 # API
 
 ### selectSquare(square)
-Selects the given square. Does nothing if the given square was already selected.
+Selects the given square by adding the `'selected'` class to it.
+Does nothing if the given square was already selected.
 
 ##### Example
 
     board.selectSquare('e6');
     
 ### unselectSquare(square)
-Unselects the given square. Does nothing if the given square wasn't selected.
+Unselects the given square by removing the `'selected'` class from it.
+Does nothing if the given square wasn't selected.
 
 ##### Example
 
     board.unselectSquare('e6');
+    
+### unselectAllSquares()
+Unselects all the selected squares by removing the `'selected'` class from them.
+
+##### Example
+
+    board.unselectAllSquares();
 
 ### setPosition(fenString)
 Sets the given position. `fenString` must be in one of the following formats:

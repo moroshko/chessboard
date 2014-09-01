@@ -1,3 +1,5 @@
+'use strict';
+
 window.ChessBoard = function(boardId, config) {
   var self = this;
 
@@ -174,7 +176,7 @@ window.ChessBoard = function(boardId, config) {
 
   function calcSquareSize() {
     var parentStyle = getComputedStyle(board.element.parentNode);
-    var parentWidth = parseInt(parentStyle.width) - parseInt(parentStyle.paddingLeft) 
+    var parentWidth = parseInt(parentStyle.width) - parseInt(parentStyle.paddingLeft)
                                                   - parseInt(parentStyle.paddingRight);
     
     squareSize = Math.floor((parentWidth - 2 * boardBorderWidth) / 8);
@@ -273,6 +275,12 @@ window.ChessBoard = function(boardId, config) {
 
     boardSquare.element.classList.remove('selected');
     selectedSquares.splice(index, 1);
+  };
+
+  this.unselectAllSquares = function() {
+    for (var i = 0, len = selectedSquares.length; i < len; i++) {
+      this.unselectSquare(selectedSquares[i]);
+    }
   };
 
   function onSquareClick(event) {
